@@ -26,7 +26,6 @@ def task_wrapper(task_func: Callable) -> Callable:
     - Logging the exception if occurs
     - Logging the output dir
     """
-
     def wrap(cfg: DictConfig):
 
         # execute the task
@@ -38,26 +37,31 @@ def task_wrapper(task_func: Callable) -> Callable:
             metric_dict, object_dict = task_func(cfg=cfg)
 
         # things to do if exception occurs
+         except FileNotFoundError as ex:
+            log.error(f"File not found: {ex}")
+            raise ex
+
+        except ValueError as ex:
+            log.error(f"Invalid value encountered: {ex}")
+            raise ex
+
+        except KeyboardInterrupt:
+            log.warning("Task interrupted by user. Exiting gracefully...")
+
         except Exception as ex:
-
-            # save exception to `.log` file
-            log.exception("")
-
-            # when using hydra plugins like Optuna, you might want to disable raising exception
-            # to avoid multirun failure
+            log.exception("An unexpected error occurred.")
             raise ex
 
         # things to always do after either success or exception
         finally:
 
             # display output dir path in terminal
-            log.info(f"Output dir: {cfg.paths.output_dir}")
+            log.info(f"Output dir: {Path(cfg.paths.output_dir)}")
 
             # close loggers (even if exception occurs so multirun won't fail)
             close_loggers()
 
         return metric_dict, object_dict
-
     return wrap
 
 
