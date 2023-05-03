@@ -62,8 +62,8 @@ class MNISTDataModule(LightningDataModule):
     def setup(self, stage: Optional[str] = None):
         """Load data. Set variables: `self.data_train`, `self.data_val`, `self.data_test`.
 
-        This method is called by lightning with both `trainer.fit()` and `trainer.test()`, so be
-        careful not to execute things like random split twice!
+        This method is called by lightning with both `trainer.fit()` and `trainer.test()`, so be careful not to execute
+        things like random split twice!
         """
         # load and split datasets only if not loaded already
         if not self.data_train and not self.data_val and not self.data_test:
