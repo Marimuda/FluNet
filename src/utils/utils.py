@@ -26,6 +26,7 @@ def task_wrapper(task_func: Callable) -> Callable:
     - Logging the exception if occurs
     - Logging the output dir
     """
+
     def wrap(cfg: DictConfig):
 
         # execute the task
@@ -37,7 +38,7 @@ def task_wrapper(task_func: Callable) -> Callable:
             metric_dict, object_dict = task_func(cfg=cfg)
 
         # things to do if exception occurs
-         except FileNotFoundError as ex:
+        except FileNotFoundError as ex:
             log.error(f"File not found: {ex}")
             raise ex
 
@@ -62,6 +63,7 @@ def task_wrapper(task_func: Callable) -> Callable:
             close_loggers()
 
         return metric_dict, object_dict
+
     return wrap
 
 
