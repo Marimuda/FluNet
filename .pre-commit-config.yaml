@@ -2,7 +2,7 @@ default_language_version:
   python: python3
 
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
+  - repo: https://${PRE_COMMIT_TOKEN}@github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
       # list of supported hooks: https://pre-commit.com/hooks.html
@@ -19,35 +19,35 @@ repos:
       - id: check-added-large-files
 
   # python code formatting
-  - repo: https://github.com/psf/black
+  - repo: https://${PRE_COMMIT_TOKEN}@github.com/psf/black
     rev: 23.3.0
     hooks:
       - id: black
         args: [--line-length, "120"]
 
   # python import sorting
-  - repo: https://github.com/PyCQA/isort
+  - repo: https://${PRE_COMMIT_TOKEN}@github.com/PyCQA/isort
     rev: 5.12.0
     hooks:
       - id: isort
         args: ["--profile", "black", "--filter-files"]
 
   # python upgrading syntax to newer version
-  - repo: https://github.com/asottile/pyupgrade
+  - repo: https://${PRE_COMMIT_TOKEN}@github.com/asottile/pyupgrade
     rev: v3.3.2
     hooks:
       - id: pyupgrade
         args: [--py38-plus]
 
   # python docstring formatting
-  - repo: https://github.com/myint/docformatter
+  - repo: https://${PRE_COMMIT_TOKEN}@github.com/myint/docformatter
     rev: v1.6.4
     hooks:
       - id: docformatter
         args: [--in-place, --wrap-summaries=120, --wrap-descriptions=120]
 
   # python check (PEP8), programming errors and code complexity
-  - repo: https://github.com/PyCQA/flake8
+  - repo: https://${PRE_COMMIT_TOKEN}@github.com/PyCQA/flake8
     rev: 6.0.0
     hooks:
       - id: flake8
@@ -60,27 +60,27 @@ repos:
           ]
 
   # python security linter
-  - repo: https://github.com/PyCQA/bandit
+  - repo: https://${PRE_COMMIT_TOKEN}@github.com/PyCQA/bandit
     rev: "1.7.5"
     hooks:
       - id: bandit
         args: ["-s", "B101"]
 
   # yaml formatting
-  - repo: https://github.com/pre-commit/mirrors-prettier
+  - repo: https://${PRE_COMMIT_TOKEN}@github.com/pre-commit/mirrors-prettier
     rev: v3.0.0-alpha.9-for-vscode
     hooks:
       - id: prettier
         types: [yaml]
 
   # shell scripts linter
-  - repo: https://github.com/shellcheck-py/shellcheck-py
+  - repo: https://${PRE_COMMIT_TOKEN}@github.com/shellcheck-py/shellcheck-py
     rev: v0.9.0.2
     hooks:
       - id: shellcheck
 
   # md formatting
-  - repo: https://github.com/executablebooks/mdformat
+  - repo: https://${PRE_COMMIT_TOKEN}@github.com/executablebooks/mdformat
     rev: 0.7.16
     hooks:
       - id: mdformat
@@ -93,7 +93,7 @@ repos:
           # - mdformat-black
 
   # word spelling linter
-  - repo: https://github.com/codespell-project/codespell
+  - repo: https://${PRE_COMMIT_TOKEN}@github.com/codespell-project/codespell
     rev: v2.2.4
     hooks:
       - id: codespell
@@ -102,13 +102,13 @@ repos:
           - --ignore-words-list=fo
 
   # jupyter notebook cell output clearing
-  - repo: https://github.com/kynan/nbstripout
+  - repo: https://${PRE_COMMIT_TOKEN}@github.com/kynan/nbstripout
     rev: 0.6.1
     hooks:
       - id: nbstripout
 
   # jupyter notebook linting
-  - repo: https://github.com/nbQA-dev/nbQA
+  - repo: https://${PRE_COMMIT_TOKEN}@github.com/nbQA-dev/nbQA
     rev: 1.7.0
     hooks:
       - id: nbqa-black
