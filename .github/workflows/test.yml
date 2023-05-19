@@ -2,9 +2,9 @@ name: Tests
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main, "release/*", "dev"]
+    branches: [master, "release/*", "dev"]
 
 jobs:
   run_tests_ubuntu:
@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest"]
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10"]
 
     timeout-minutes: 20
 
@@ -37,6 +37,9 @@ jobs:
       - name: List dependencies
         run: |
           python -m pip list
+
+      - name: Setup Wandb API Key
+        run: echo "WANDB_API_KEY=${{ secrets.WANDB_API_KEY }}" >> $GITHUB_ENV
 
       - name: Run pytest
         run: |
@@ -49,7 +52,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["macos-latest"]
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10"]
 
     timeout-minutes: 20
 
@@ -73,6 +76,9 @@ jobs:
         run: |
           python -m pip list
 
+      - name: Setup Wandb API Key
+        run: echo "WANDB_API_KEY=${{ secrets.WANDB_API_KEY }}" >> $GITHUB_ENV
+
       - name: Run pytest
         run: |
           pytest -v
@@ -84,7 +90,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["windows-latest"]
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10"]
 
     timeout-minutes: 20
 
@@ -106,6 +112,9 @@ jobs:
       - name: List dependencies
         run: |
           python -m pip list
+
+      - name: Setup Wandb API Key
+        run: echo "WANDB_API_KEY=${{ secrets.WANDB_API_KEY }}" >> $GITHUB_ENV
 
       - name: Run pytest
         run: |
@@ -131,6 +140,9 @@ jobs:
           pip install pytest
           pip install pytest-cov[toml]
           pip install sh
+
+      - name: Setup Wandb API Key
+        run: echo "WANDB_API_KEY=${{ secrets.WANDB_API_KEY }}" >> $GITHUB_ENV
 
       - name: Run tests and collect coverage
         run: pytest --cov src # NEEDS TO BE UPDATED WHEN CHANGING THE NAME OF "src" FOLDER
