@@ -141,6 +141,9 @@ jobs:
           pip install pytest-cov[toml]
           pip install sh
 
+      - name: Setup Wandb API Key
+        run: echo "WANDB_API_KEY=${{ secrets.WANDB_API_KEY }}" >> $GITHUB_ENV
+
       - name: Run tests and collect coverage
         run: pytest --cov src # NEEDS TO BE UPDATED WHEN CHANGING THE NAME OF "src" FOLDER
 
