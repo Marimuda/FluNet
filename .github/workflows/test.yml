@@ -2,9 +2,9 @@ name: Tests
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main, "release/*", "dev"]
+    branches: [master, "release/*", "dev"]
 
 jobs:
   run_tests_ubuntu:
@@ -37,6 +37,9 @@ jobs:
       - name: List dependencies
         run: |
           python -m pip list
+
+      - name: Setup Wandb API Key
+        run: echo "WANDB_API_KEY=${{ secrets.WANDB_API_KEY }}" >> $GITHUB_ENV
 
       - name: Run pytest
         run: |
@@ -73,6 +76,9 @@ jobs:
         run: |
           python -m pip list
 
+      - name: Setup Wandb API Key
+        run: echo "WANDB_API_KEY=${{ secrets.WANDB_API_KEY }}" >> $GITHUB_ENV
+
       - name: Run pytest
         run: |
           pytest -v
@@ -106,6 +112,9 @@ jobs:
       - name: List dependencies
         run: |
           python -m pip list
+
+      - name: Setup Wandb API Key
+        run: echo "WANDB_API_KEY=${{ secrets.WANDB_API_KEY }}" >> $GITHUB_ENV
 
       - name: Run pytest
         run: |
