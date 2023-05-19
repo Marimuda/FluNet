@@ -16,3 +16,7 @@ Fixes #\<issue_number>
 - [ ] Did you list all the **breaking changes** introduced by this pull request?
 - [ ] Did you **test your PR locally** with `pytest` command?
 - [ ] Did you **run pre-commit hooks** with `pre-commit run -a` command?
+
+## Did you have fun?
+
+Make sure you had fun coding 🙃
