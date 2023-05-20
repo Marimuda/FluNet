@@ -72,6 +72,7 @@ def test_optuna_sweep(tmp_path):
 
 @RunIf(wandb=True, sh=True)
 @pytest.mark.slow
+@pytest.mark.dev_mark
 def test_optuna_sweep_ddp_sim_wandb(tmp_path):
     """Test optuna sweep with wandb and ddp sim."""
     command = [
