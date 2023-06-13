@@ -9,6 +9,7 @@ if _SH_AVAILABLE:
 
 
 def run_sh_command(command: List[str]):
+    print(command)
     """Default method for executing shell commands with pytest and sh package."""
     msg = None
     try:

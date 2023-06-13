@@ -17,11 +17,6 @@ class MLP(nn.Module):
 
         super().__init__()
 
-        self.in_dim = in_dim
-        self.out_dim = out_dim
-        self.hidden_dim = hidden_dim
-        self.hidden_layers = hidden_layers
-
         layers = []
         layers.append(nn.Linear(in_dim, hidden_dim))
         layers.append(nn.ReLU())
