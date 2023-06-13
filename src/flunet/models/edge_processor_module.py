@@ -1,14 +1,21 @@
-import torch
-from torch import nn, Tensor
-from torch_geometric.data import Data
 from typing import Type
+
+import torch
+from torch import Tensor, nn
+from torch_geometric.data import Data
+
 
 class EdgeProcessorModule(nn.Module):
     def __init__(
-            self, in_dim_node: int, in_dim_edge: int, hidden_dim: int, hidden_layers: int, norm_type: str ="BatchNorm1d", activation: Type[nn.Module] = None
+        self,
+        in_dim_node: int,
+        in_dim_edge: int,
+        hidden_dim: int,
+        hidden_layers: int,
+        norm_type: str = "BatchNorm1d",
+        activation: Type[nn.Module] = None,
     ):
-        """
-        Initializes an EdgeProcessorModule.
+        """Initializes an EdgeProcessorModule.
 
         Args:
             in_dim_node (int): The input dimensionality of node features.
@@ -37,8 +44,7 @@ class EdgeProcessorModule(nn.Module):
             self.norm_layer = getattr(nn, norm_type)(in_dim_edge)
 
     def forward(self, src: Tensor, dest: Tensor, edge_attr: Tensor, u: Tensor, batch: Tensor) -> Tensor:
-        """
-        Performs a forward pass through the EdgeProcessorModule.
+        """Performs a forward pass through the EdgeProcessorModule.
 
         Args:
             src (Tensor): The source node features.
