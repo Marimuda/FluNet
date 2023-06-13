@@ -23,6 +23,7 @@ def test_mlp_initialization():
     with pytest.raises(AttributeError):
         _ = mlp.norm_type
 
+
 def test_mlp_forward():
     mlp = MLP(in_dim=10, out_dim=20, hidden_dim=15, hidden_layers=2, norm_type="BatchNorm1d")
     input_data = torch.randn(50, 10)
