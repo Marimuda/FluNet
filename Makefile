@@ -28,3 +28,14 @@ test-full: ## Run all tests
 
 train: ## Train the model
 	python src/train.py
+
+push: format test-full coverage  ## Run pre-commit hooks, full tests, and generate coverage
+
+format:
+	pre-commit run -a
+
+coverage:  ## Generate coverage report
+	coverage run -m pytest
+	coverage report
+
+.PHONY: help clean clean-logs format sync test test-full train push coverage

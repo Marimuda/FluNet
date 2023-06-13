@@ -11,14 +11,19 @@ hydra-optuna-sweeper==1.2.0
 
 # --------- loggers --------- #
 wandb
-# neptune-client
-# mlflow
-# comet-ml
-# aim>=3.16.2  # no lower than 3.16.2, see https://github.com/aimhubio/aim/issues/2550
 
 # --------- others --------- #
-pyrootutils     # standardizing the project root setup
-pre-commit      # hooks for applying linters on commit
-rich            # beautiful text formatting in terminal
-pytest          # tests
-sh            # for running bash commands in some tests (linux/macos only)
+pyrootutils
+pre-commit
+rich
+pytest
+sh
+
+# --------- additional packages --------- #
+torch-scatter==2.1.1+pt20cu118
+pytest-cov==4.1.0
+pytest-xdist==3.3.1
+mock==5.0.2
+torch-geometric==2.3.1
+torch-cluster==1.6.1+pt20cu117
+scipy==1.10.1
