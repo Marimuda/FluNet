@@ -1,3 +1,7 @@
+-f https://data.pyg.org/whl/torch-2.0.0+cu117.html
+-f https://data.pyg.org/whl/torch-2.0.0+cu117.html
+-f https://data.pyg.org/whl/torch-2.0.0+cu117.html 
+
 # --------- pytorch --------- #
 torch>=2.0.0
 torchvision>=0.15.0
@@ -20,10 +24,10 @@ pytest
 sh
 
 # --------- additional packages --------- #
-torch-scatter==2.1.1+pt20cu118
-pytest-cov==4.1.0
-pytest-xdist==3.3.1
-mock==5.0.2
-torch-geometric==2.3.1
-torch-cluster==1.6.1+pt20cu117
-scipy==1.10.1
+torch-scatter>=2.1.1
+pytest-cov>=4.1.0
+pytest-xdist>=3.3.1
+mock>=5.0.2
+torch-geometric>=2.3.1
+torch-cluster>=1.6.1
+scipy>=1.10.1
