@@ -1,7 +1,7 @@
 import torch
 from torch_geometric.data import Data
 
-class EdgeProcessor(torch.nn.Module):
+class EdgeProcessorModule(torch.nn.Module):
     def __init__(self, in_dim_node, in_dim_edge, hidden_dim, hidden_layers, norm_type='BatchNorm1d'):
         super().__init__()
 
