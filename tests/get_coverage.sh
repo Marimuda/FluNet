@@ -12,15 +12,16 @@
 
 # do the coverage checks
 coverage run \
---rcfile='coverage.pytest.rc' \
+--rcfile='./tests/coverage.pytest.rc' \
 -m pytest \
 
 coverage run \
---rcfile='coverage.docstring.rc' \
+--rcfile='./tests/coverage.docstring.rc' \
 -m pytest \
---doctest-modules ../src/flunet//
+--doctest-modules ./src/flunet/
 
 coverage combine --data-file=.coverage
+
 coverage report --omit=*test*
 
 # if you wish to view the report in HTML format uncomment below
