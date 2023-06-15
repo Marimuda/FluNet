@@ -6,6 +6,21 @@ from torch_geometric.data import Data
 
 
 class EdgeProcessorModule(nn.Module):
+    """Module for processing edge features in a graph.
+
+    This module takes source node features, destination node features, edge features, a tensor for message passing (u),
+    and a tensor representing the graph batch. It performs a forward pass to process the edge features and returns the
+    processed edge features.nitializes an EdgeProcessorModule.
+
+    Args:
+        in_dim_node (int): The input dimensionality of node features.
+        in_dim_edge (int): The input dimensionality of edge features.
+        hidden_dim (int): The dimensionality of hidden layers.
+        hidden_layers (int): The number of hidden layers.
+        norm_type (str, optional): The type of normalization layer. Defaults to "BatchNorm1d".
+        activation (type[nn.Module], optional): The activation function. Defaults to nn.ReLU.
+    """
+
     def __init__(
         self,
         in_dim_node: int,
@@ -15,16 +30,6 @@ class EdgeProcessorModule(nn.Module):
         norm_type: str = "BatchNorm1d",
         activation: Type[nn.Module] = None,
     ):
-        """Initializes an EdgeProcessorModule.
-
-        Args:
-            in_dim_node (int): The input dimensionality of node features.
-            in_dim_edge (int): The input dimensionality of edge features.
-            hidden_dim (int): The dimensionality of hidden layers.
-            hidden_layers (int): The number of hidden layers.
-            norm_type (str, optional): The type of normalization layer. Defaults to "BatchNorm1d".
-            activation (type[nn.Module], optional): The activation function. Defaults to nn.ReLU.
-        """
         super().__init__()
 
         layers = []

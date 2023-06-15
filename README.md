@@ -362,34 +362,36 @@ It measures the percentage of branches and lines covered by your tests. Aiming f
 
 To test coverage locally, follow these steps:
 
-1.  Install pytest and pytest-cov if you haven't already. Use the following command to install them:
+1. Install pytest and pytest-cov if you haven't already. Use the following command to install them:
 
 ```bash
 pip install pytest pytest-cov
 ```
 
-2.  Refer to the [coverage documentation](https://pytest-cov.readthedocs.io/en/latest/) for more details on how pytest-cov works.
-3.  To run pytest with coverage for your codebase, execute the following command in your project's root directory:
+2. Refer to the [coverage documentation](https://pytest-cov.readthedocs.io/en/latest/) for more details on how pytest-cov works.
+3. To run pytest with coverage for your codebase, execute the following command in your project's root directory:
 
 ```bash
 pytest --cov
 ```
+
 This command will execute all tests and generate a coverage report.
-4.  To run pytest with coverage for specific modules or packages, provide the module/package name(s) as arguments:
+4\.  To run pytest with coverage for specific modules or packages, provide the module/package name(s) as arguments:
 
 ```bash
 pytest --cov=<module_name>
 ```
-Replace <b>'<module\_name>'</b> with the name of the module or package you want to measure coverage for
 
-5.  FluNet aims for more than 80% code coverage to ensure comprehensive testing of any code additions.
+Replace <b>'\<module_name>'</b> with the name of the module or package you want to measure coverage for
+
+5. FluNet aims for more than 80% code coverage to ensure comprehensive testing of any code additions.
 
 <b>Testing Coverage Locally</b>
 
 To test coverage locally and check the coverage of the specific module that you added or edited, follow these steps:
 
-1.  Navigate to the base directory.
-2.  Run the './test/get\_coverage.sh' script from the terminal'
+1. Navigate to the base directory.
+2. Run the './test/get_coverage.sh' script from the terminal'
 
 ```bash
 ./tests/get\_coverage.sh

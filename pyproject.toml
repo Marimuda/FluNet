@@ -4,7 +4,6 @@ addopts = [
   "--durations=0",
   "--strict-markers",
   "--doctest-modules",
-  "-s"
 ]
 filterwarnings = [
   "ignore::DeprecationWarning",
