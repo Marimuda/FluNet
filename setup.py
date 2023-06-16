@@ -54,7 +54,6 @@ CLASSIFIERS = [
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Programming Language :: Python :: 3.11",
-    "Environment :: CPU",
     "Environment :: GPU :: NVIDIA CUDA :: 12 :: 12.1" "License :: OSI Approved :: Apache Software License",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Physics",
@@ -63,6 +62,7 @@ CLASSIFIERS = [
     "Topic :: Software Development",
     "Topic :: Software Development :: Libraries",
     "Topic :: Software Development :: Libraries :: Python Modules",
+    "Operating System :: OS Independent",
 ]
 
 setup(
@@ -71,6 +71,7 @@ setup(
     description=(
         "A common library for utilizing Graph Neural Networks (GNNs) in fluid dynamics research and applications."
     ),
+    readme="README.md",
     license="Apache 2.0",
     author="The FluNet development team",
     url="https://github.com/Marimuda/FluNet",
