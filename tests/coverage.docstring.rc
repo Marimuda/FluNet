@@ -4,3 +4,6 @@ data_file = .coverage.docs.pytest
 concurrency = multiprocessing,thread
 source =
     src/flunet
+
+[report]
+show_missing = True
