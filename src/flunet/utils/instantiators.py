@@ -32,6 +32,10 @@ def instantiate_callback(cb_conf: DictConfig) -> Optional[Callback]:
 def instantiate_callbacks(callbacks_cfg: DictConfig) -> List[Callback]:
     """Instantiates callbacks from config."""
 
+    if not callbacks_cfg:
+        log.warning("No callback configs found! Skipping..")
+        return []
+
     validate_callbacks_cfg(callbacks_cfg)
 
     callbacks: List[Callback] = []
@@ -45,6 +49,10 @@ def instantiate_callbacks(callbacks_cfg: DictConfig) -> List[Callback]:
 
 def instantiate_loggers(logger_cfg: DictConfig) -> List[Logger]:
     """Instantiates loggers from config."""
+
+    if not logger_cfg:
+        log.warning("No logger configs found! Skipping..")
+        return []
 
     logger: List[Logger] = []
 

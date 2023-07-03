@@ -30,6 +30,9 @@ from src.flunet import utils
 
 log = utils.get_pylogger(__name__)
 
+log.info("Setting the precision for float32 matrix multiplication in train.py")
+# Set the precision for float32 matrix multiplication
+torch.set_float32_matmul_precision('medium')
 
 @utils.task_wrapper
 def train(cfg: DictConfig) -> Tuple[dict, dict]:
@@ -49,10 +52,10 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     if cfg.get("seed"):
         L.seed_everything(cfg.seed, workers=True)
 
-    log.info(f"Instantiating datamodule <{cfg.data._target_}>")
+    log.info("Instantiating datamodule <%s>", cfg.data.__class__.__name__)
     datamodule: LightningDataModule = hydra.utils.instantiate(cfg.data)
 
-    log.info(f"Instantiating model <{cfg.model._target_}>")
+    log.info("Instantiating model <%s>", cfg.model.__class__.__name__)
     model: LightningModule = hydra.utils.instantiate(cfg.model)
 
     log.info("Instantiating callbacks...")
@@ -61,7 +64,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     log.info("Instantiating loggers...")
     logger: List[Logger] = utils.instantiate_loggers(cfg.get("logger"))
 
-    log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
+    log.info("Instantiating trainer <%s>", cfg.trainer.__class__.__name__)
     trainer: Trainer = hydra.utils.instantiate(cfg.trainer, callbacks=callbacks, logger=logger)
 
     object_dict = {
@@ -93,7 +96,9 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
         if ckpt_path == "":
             log.warning("Best ckpt not found! Using current weights for testing...")
             ckpt_path = None
-        trainer.test(model=model, datamodule=datamodule, ckpt_path=ckpt_path)
+        #trainer.test(model=model, datamodule=datamodule, ckpt_path=ckpt_path)
+        log.warning("Testing is not implemented yet!, Using validation during development")
+        trainer.validate(model=model, datamodule=datamodule, ckpt_path=ckpt_path)
         log.info(f"Best ckpt path: {ckpt_path}")
 
     test_metrics = trainer.callback_metrics
