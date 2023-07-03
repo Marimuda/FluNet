@@ -4,8 +4,8 @@ import pytest
 from hydra.core.hydra_config import HydraConfig
 from omegaconf import open_dict
 
-from src.flunet.eval import evaluate
-from src.flunet.train import train
+from flunet.eval import evaluate
+from flunet.train import train
 
 
 @pytest.mark.slow
