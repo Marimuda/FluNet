@@ -1,3 +1,13 @@
+# Include environment variables from .env file
+include .env
+export
+
+# Default variables
+PROJECT_NAME ?= flunet
+VERSION ?= latest
+LOCAL_DIR ?= $(PWD)
+
+
 help:  ## Show help
 	@grep -E '^[.a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
@@ -47,4 +57,40 @@ doctest:
                 --doctest-modules src/flunet
 
 
-.PHONY: help clean clean-logs format sync pytest pytest-full train push coverage doctest
+# Check for essential environment variables
+ifeq ($(strip $(PROJECT_NAME)),)
+$(error PROJECT_NAME is not set. Check .env file.)
+endif
+
+build: ## Build the Docker image
+	@echo "Building Docker image..."
+	docker build \
+		--build-arg LOCAL_DIR=$(LOCAL_DIR) \
+		--build-arg TENSORBOARD_PORT=$(TENSORBOARD_PORT) \
+		--build-arg SERVICE_PORT=$(SERVICE_PORT) \
+		-t $(PROJECT_NAME):$(VERSION) .
+
+run: ## Run the Docker container
+	@echo "Running Docker container..."
+	@echo "LOCAL_DIR is $(LOCAL_DIR) and DOCKER_WORK_DIR is $(DOCKER_WORK_DIR)"
+	
+	docker run --workdir $(DOCKER_WORK_DIR) $(GPU_FLAG) --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 --rm -it \
+		-v $(LOCAL_DIR):$(DOCKER_WORK_DIR) \
+		-p $(TENSORBOARD_PORT):$(TENSORBOARD_PORT) \
+		-p $(SERVICE_PORT):$(SERVICE_PORT) \
+		$(PROJECT_NAME):$(VERSION)
+
+stop: ## Stop the Docker container
+	@echo "Stopping Docker container..."
+	docker stop $(PROJECT_NAME)
+
+clean: ## Remove the Docker image
+	@echo "Removing Docker image..."
+	docker rmi $(PROJECT_NAME):$(VERSION)
+
+docker-sanity-test: ## Run tests inside the Docker container
+	@echo "Running sanity tests..."
+	docker exec -it $(PROJECT_NAME) pytest $(DOCKER_WORK_DIR)/tests/datasets
+
+
+.PHONY: help clean clean-logs format sync pytest pytest-full train push coverage doctest build run stop clean docker-sanity-test
