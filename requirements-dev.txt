@@ -3,3 +3,4 @@ pytest==7.*
 hydra-optuna-sweeper
 hydra-colorlog
 pyrootutils
+coverage

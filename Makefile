@@ -6,6 +6,20 @@ export
 PROJECT_NAME ?= flunet
 VERSION ?= latest
 LOCAL_DIR ?= $(PWD)
+USE_DOCKER ?= 0
+
+# Define the common Docker arguments and command prefix based on the USE_DOCKER flag.
+DOCKER_COMMON_ARGS := -v "$(LOCAL_DIR):/workspace" --rm
+DOCKER_WORK_DIR ?= /workspace
+ifeq ($(USE_DOCKER),1)
+    DOCKER_RUN_CMD := docker run --workdir $(DOCKER_WORK_DIR) $(GPU_FLAG) --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 --rm -it $(DOCKER_COMMON_ARGS) -p $(TENSORBOARD_PORT):$(TENSORBOARD_PORT) -p $(SERVICE_PORT):$(SERVICE_PORT) $(PROJECT_NAME):$(VERSION)
+    DOCKER_EXEC_CMD := docker exec -it $(PROJECT_NAME)
+else
+    DOCKER_RUN_CMD :=
+    DOCKER_EXEC_CMD :=
+endif
+
+# LOCAL COMMANDS
 
 help:  ## Display this help message
 	@echo "Available commands:"
@@ -37,16 +51,6 @@ sync: ## Synchronize with the main branch
 	@git pull origin main
 	@echo "Sync complete."
 
-pytest: ## Execute tests marked as 'not slow'
-	@echo "Running fast test suite..."
-	@coverage run --rcfile='tests/coverage.pytest.rc' -m pytest -k "not slow"
-	@echo "Fast test suite completed."
-
-pytest-full: ## Run the complete test suite
-	@echo "Running full test suite..."
-	@coverage run --rcfile='tests/coverage.pytest.rc' -m pytest
-	@echo "Full test suite completed."
-
 install: ## Install the project dependencies
 	@echo "Installing project dependencies..."
 	@pip install --upgrade pip && pip install -e .
@@ -56,11 +60,6 @@ setup-ci: ## Set up continuous integration environment
 	@echo "Setting up continuous integration environment..."
 	@pip install pre-commit && pre-commit install
 	@echo "CI environment setup completed."
-
-train: ## Start the model training process
-	@echo "Training the model..."
-	@python src/train.py
-	@echo "Model training completed."
 
 push: ## Execute pre-commit hooks, run full tests, and generate coverage reports
 	@echo "Running pre-commit hooks, full tests, and generating coverage reports..."
@@ -72,17 +71,31 @@ black: ## Format code with Black
 	@pre-commit run black -a
 	@echo "Code formatting with Black completed."
 
+# HYBRID COMMANDS
+
+pytest: ## Execute tests marked as 'not slow'
+	@$(DOCKER_RUN_CMD) coverage run --rcfile='tests/coverage.pytest.rc' -m pytest -k "not slow"
+	@echo "Fast test suite completed."
+
+pytest-full: ## Run the complete test suite
+	@$(DOCKER_RUN_CMD) coverage run --rcfile='tests/coverage.pytest.rc' -m pytest
+	@echo "Full test suite completed."
+
+train: ## Start the model training process
+	@$(DOCKER_RUN_CMD) python src/train.py
+	@echo "Model training completed."
+
 coverage:  ## Generate and display a coverage report
-	@echo "Generating coverage report..."
-	@coverage combine
-	@coverage report --show-missing --omit=*test* --fail-under=80
-	@coverage html
+	@$(DOCKER_EXEC_CMD) coverage combine
+	@$(DOCKER_EXEC_CMD) coverage report --show-missing --omit=*test* --fail-under=80
+	@$(DOCKER_EXEC_CMD) coverage html
 	@echo "Coverage report generated."
 
 doctest: ## Run tests on docstrings
-	@echo "Testing docstrings..."
-	@coverage run --rcfile='tests/coverage.docstring.rc' -m pytest --doctest-modules src/flunet
+	@$(DOCKER_RUN_CMD) coverage run --rcfile='tests/coverage.docstring.rc' -m pytest --doctest-modules src/flunet
 	@echo "Docstring tests completed."
+
+#DOCKER COMMANDS
 
 build_docker: ## Build the Docker image for the project
 	@echo "Building Docker image '${PROJECT_NAME}:${VERSION}'..."

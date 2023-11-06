@@ -13,4 +13,4 @@ from .types import (
     Shape,
     ValueDict,
 )
-from .utils import extras, get_metric_value
+from .utils import extras, get_metric_value, task_wrapper
