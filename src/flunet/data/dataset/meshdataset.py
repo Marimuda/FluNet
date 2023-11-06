@@ -1,11 +1,12 @@
-import os
-import torch
-from torch_geometric.data import Dataset, Data, download_url
-import numpy as np
+import functools
 import glob
 import json
+import os
+
+import numpy as np
 import tensorflow as tf
-import functools
+import torch
+from torch_geometric.data import Data, Dataset, download_url
 
 
 class MeshDataset(Dataset):
@@ -85,9 +86,9 @@ class MeshDataset(Dataset):
             download_url(url=url, folder=self.raw_dir)
 
     def process(self):
-        with open(os.path.join(self.raw_dir, "meta.json"), "r") as fp:
+        with open(os.path.join(self.raw_dir, "meta.json")) as fp:
             meta = json.loads(fp.read())
-        ds = tf.data.TFRecordDataset(os.path.join(self.raw_dir, f"%s.tfrecord" % self.split))
+        ds = tf.data.TFRecordDataset(os.path.join(self.raw_dir, f"{self.split}.tfrecord"))
         ds = ds.map(functools.partial(self._parse, meta=meta), num_parallel_calls=8)
         ds = self.add_targets(ds, meta, self.hparams.field, self.hparams.history)
 

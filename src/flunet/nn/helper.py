@@ -1,30 +1,30 @@
+from typing import Iterable, Optional, Union
+
+import numpy as np
 import torch
 from torch import nn
-from flunet.utils.types import *
 
 
 class View(nn.Module):
-    """
-    Custom Layer to change the shape of an incoming tensor.
-    """
+    """Custom Layer to change the shape of an incoming tensor."""
 
     def __init__(self, default_shape: Union[tuple, int], custom_repr: str = None):
-        """
-        Utility layer to reshape an input into the given shape. Auto-converts for different batch_sizes
+        """Utility layer to reshape an input into the given shape.
+
+        Auto-converts for different batch_sizes
         Args:
             default_shape: The shape (without the batch size) to convert to
             custom_repr: Custom representation string of this layer.
             Shown when printing the layer or a network containing it
         """
-        import numpy as np
 
-        super(View, self).__init__()
+        super().__init__()
         if isinstance(default_shape, (int, np.int32, np.int64)):
             self._default_shape = (default_shape,)
         elif isinstance(default_shape, tuple):
             self._default_shape = default_shape
         else:
-            raise ValueError("Unknown type for 'shape' parameter of View module: {}".format(default_shape))
+            raise ValueError(f"Unknown type for 'shape' parameter of View module: {default_shape}")
         self._custom_repr = custom_repr
 
     def forward(self, tensor: torch.Tensor, shape: Optional[Iterable] = None) -> torch.Tensor:
@@ -40,8 +40,7 @@ class View(nn.Module):
         tensor = tensor.contiguous()  # to have everything nicely arranged in memory, which is a requisite for .view()
         if shape is None:
             return tensor.view((-1, *self._default_shape))  # -1 to deal with different batch sizes
-        else:
-            return tensor.view((-1, *shape))
+        return tensor.view((-1, *shape))
 
     def extra_repr(self) -> str:
         """
@@ -49,15 +48,12 @@ class View(nn.Module):
         Returns: A string containing information about the parameters of this module
         """
         if self._custom_repr is not None:
-            return "{} default_shape={}".format(self._custom_repr, self._default_shape)
-        else:
-            return "default_shape={}".format(self._default_shape)
+            return f"{self._custom_repr} default_shape={self._default_shape}"
+        return f"default_shape={self._default_shape}"
 
 
 class SaveBatchNorm1d(nn.BatchNorm1d):
-    """
-    Custom Layer to deal with Batchnorms for 1-sample inputs
-    """
+    """Custom Layer to deal with Batchnorms for 1-sample inputs."""
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         batch_size = x.shape[0]
@@ -69,9 +65,10 @@ class SaveBatchNorm1d(nn.BatchNorm1d):
 
 
 class LinearEmbedding(nn.Module):
-    """
-    Linear Embedding module. Essentially a learned matrix multiplication (and a bias) to make input dimension of tokens
-    compatible with the "main" architecture that uses them.
+    """Linear Embedding module.
+
+    Essentially a learned matrix multiplication (and a bias) to make input dimension of tokens compatible with the
+    "main" architecture that uses them.
     """
 
     def __init__(self, in_features: int, out_features: int):

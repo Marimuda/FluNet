@@ -32,7 +32,8 @@ log = utils.get_pylogger(__name__)
 
 log.info("Setting the precision for float32 matrix multiplication in train.py")
 # Set the precision for float32 matrix multiplication
-torch.set_float32_matmul_precision('medium')
+torch.set_float32_matmul_precision("medium")
+
 
 @utils.task_wrapper
 def train(cfg: DictConfig) -> Tuple[dict, dict]:
@@ -96,7 +97,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
         if ckpt_path == "":
             log.warning("Best ckpt not found! Using current weights for testing...")
             ckpt_path = None
-        #trainer.test(model=model, datamodule=datamodule, ckpt_path=ckpt_path)
+        # trainer.test(model=model, datamodule=datamodule, ckpt_path=ckpt_path)
         log.warning("Testing is not implemented yet!, Using validation during development")
         trainer.validate(model=model, datamodule=datamodule, ckpt_path=ckpt_path)
         log.info(f"Best ckpt path: {ckpt_path}")

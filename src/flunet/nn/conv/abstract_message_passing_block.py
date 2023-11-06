@@ -1,17 +1,18 @@
 from typing import Optional
+
 from torch import nn as nn
 from torch_geometric.nn import MetaLayer
 
-from flunet.utils.types import *
+from flunet.utils.types import ConfigDict
 
 
 class AbstractMessagePassingBlock(nn.Module):
-    """
-    Defines a single MessagePassingLayer that takes an observation graph and updates its node and edge
-    features using different modules described in implementations of this abstract class.
-    It first updates the edge-features. The node-features are updated next using the new edge-features. Finally,
-    it updates the global features using the new edge- & node-features. The updates are done through MLPs.
-    The three Modules (Edge, Node, Global) are combined into a MetaLayer.
+    """Defines a single MessagePassingLayer that takes an observation graph and updates its node and edge features using
+    different modules described in implementations of this abstract class.
+
+    It first updates the edge-features. The node-features are updated next using the new edge-features. Finally, it
+    updates the global features using the new edge- & node-features. The updates are done through MLPs. The three
+    Modules (Edge, Node, Global) are combined into a MetaLayer.
     """
 
     def __init__(self, base_config: ConfigDict, use_residual_connections: bool = False) -> None:
@@ -22,6 +23,7 @@ class AbstractMessagePassingBlock(nn.Module):
                 the original inputs will be added to the outputs.
         """
         super().__init__()
+        self._base_config = base_config
         self._use_residual_connections = use_residual_connections
 
         # structure created by specific implementation
@@ -32,23 +34,17 @@ class AbstractMessagePassingBlock(nn.Module):
 
     @property
     def out_node_features(self) -> int:
-        """
-        The output dimension of the node module
-        """
+        """The output dimension of the node module."""
         return self._out_node_features
 
     @property
     def out_edge_features(self) -> int:
-        """
-        The output dimension of the node module
-        """
+        """The output dimension of the node module."""
         return self._out_edge_features
 
     @property
     def out_global_features(self) -> int:
-        """
-        The output dimension of the global module
-        """
+        """The output dimension of the global module."""
         return self._out_global_features
 
     def __repr__(self):

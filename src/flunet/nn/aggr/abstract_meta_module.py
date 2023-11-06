@@ -1,11 +1,12 @@
 import torch
 
-from flunet.utils.Functions import get_aggregation_function
+from flunet.utils.functions import get_aggregation_function
 
 
 class AbstractMetaModule(torch.nn.Module):
-    """
-    An abstract class for the modules used in the GNN. They are used for updating node-, edge-, and global features.
+    """An abstract class for the modules used in the GNN.
+
+    They are used for updating node-, edge-, and global features.
     """
 
     def __init__(self, aggregation_function_str: str = "mean"):
@@ -28,7 +29,5 @@ class AbstractMetaModule(torch.nn.Module):
 
     @property
     def out_features(self) -> int:
-        """
-        Size of the features the forward function returns.
-        """
+        """Size of the features the forward function returns."""
         raise NotImplementedError("AbstractMetaModule does not implement num_global_features")

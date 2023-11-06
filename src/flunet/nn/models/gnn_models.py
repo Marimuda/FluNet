@@ -1,7 +1,8 @@
 from typing import Dict
+
 from torch import nn as nn
 
-from flunet.nn.models.HomoGNNBase import GNNBase
+from flunet.nn.models.homo_gnn_base import GNNBase
 from flunet.utils.types import ConfigDict
 
 # Analysis of the structural changes
@@ -14,8 +15,8 @@ from flunet.utils.types import ConfigDict
 
 
 class HomoGNN(nn.Module):
-    """
-    Homogeneous Graph Neural Network (GNN) module to process the common graph including the mesh and point cloud.
+    """Homogeneous Graph Neural Network (GNN) module to process the common graph including the mesh and point cloud.
+
     It uses the encoder and message passing stack of the GNNBase with a node-wise decoder on top.
     """
 
@@ -36,7 +37,7 @@ class HomoGNN(nn.Module):
             network_config: Config containing information on how to build and train the overall network. Includes a config for the GNNBase.
               latent_dimension: how large the latent-dimension of the embedding should be
         """
-        super(HomoGNN, self).__init__()
+        super().__init__()
 
         # HACK: I need access to the dims of node,edge,output features for normalization in LitModule
         # To not add the same config settings several times, I add it here to access it from parent.
