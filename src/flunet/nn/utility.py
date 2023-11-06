@@ -1,8 +1,8 @@
-import torch.nn as nn
 import numpy as np
+import torch.nn as nn
 
-from flunet.utils.types import *
-from flunet.nn.Helper import SaveBatchNorm1d
+from flunet.nn.helper import SaveBatchNorm1d
+from flunet.utils.types import ConfigDict
 
 
 def get_activation_and_regularization_layers(in_features: int, regularization_config: ConfigDict) -> nn.ModuleList:
@@ -73,7 +73,7 @@ def get_layer_size_layout(max_neurons: int, num_layers: int, network_shape: str 
     """
     assert isinstance(
         max_neurons, int
-    ), "Need to have an integer number of maximum neurons. Got '{}' of type '{}'".format(max_neurons, type(max_neurons))
+    ), f"Need to have an integer number of maximum neurons. Got '{max_neurons}' of type '{type(max_neurons)}'"
     if num_layers == 0:
         return np.array([])  # empty list, i.e., no network
     if network_shape in ["=", "==", "block"]:

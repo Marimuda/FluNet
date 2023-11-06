@@ -3,7 +3,6 @@ from unittest.mock import Mock
 import pytest
 import torch
 from torch import nn
-from torch_geometric.data import Data
 
 from src.flunet.models import EdgeProcessorModule
 

@@ -16,8 +16,8 @@ dependencies:
   - rich=13.*
 
   # --------- loggers --------- #
-  - wandb=1.* 
-  
+  - wandb=1.*
+
   - pip>=23.3
   - pip:
       - hydra-optuna-sweeper

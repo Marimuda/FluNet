@@ -1,13 +1,11 @@
 from torch import nn
 
-from flunet.nn.conv.AbstractMessagePassingBlock import AbstractMessagePassingBlock
-from flunet.utils.types import *
+from flunet.nn.conv.abstract_message_passing_block import AbstractMessagePassingBlock
+from flunet.utils.types import ConfigDict
 
 
 class AbstractMessagePassingStack(nn.Module):
-    """
-    Internally stacks multiple instances of MessagePassingBlock.
-    """
+    """Internally stacks multiple instances of MessagePassingBlock."""
 
     def __init__(self, base_config: ConfigDict):
         """
@@ -29,28 +27,20 @@ class AbstractMessagePassingStack(nn.Module):
 
     @property
     def num_blocks(self) -> int:
-        """
-        How many blocks this stack is composed of.
-        """
+        """How many blocks this stack is composed of."""
         return len(self._blocks)
 
     @property
     def out_node_features(self) -> int:
-        """
-        The node feature dimension that the last block in the stack returns.
-        """
+        """The node feature dimension that the last block in the stack returns."""
         return self._blocks[-1].out_node_features
 
     @property
     def out_edge_features(self) -> int:
-        """
-        The edge feature dimension that the last block in the stack returns.
-        """
+        """The edge feature dimension that the last block in the stack returns."""
         return self._blocks[-1].out_edge_features
 
     @property
     def out_global_features(self) -> int:
-        """
-        The global feature dimension that the last block in the stack returns.
-        """
+        """The global feature dimension that the last block in the stack returns."""
         return self._blocks[-1].out_global_features

@@ -66,7 +66,6 @@ For example, you can't resume hydra-based multirun or hyperparameter search.
 
 <br>
 
-
 ## ⚡  Your Superpowers
 
 <details>

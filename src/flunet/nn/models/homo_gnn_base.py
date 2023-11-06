@@ -1,19 +1,19 @@
+from typing import Dict, Optional, Tuple
+
 import torch
 
-from flunet.nn.models.AbstractGNNBase import get_global_features, AbstractGNNBase
-from flunet.utils.types import *
-import flunet.utils.Keys as Keys
-from flunet.nn.models.HomoMessagePassingStack import HomoMessagePassingStack
-from flunet.nn.Helper import LinearEmbedding
+from flunet.nn.helper import LinearEmbedding
+from flunet.nn.models.abstract_gnn_base import AbstractGNNBase, get_global_features
+from flunet.nn.models.homo_message_passing_stack import HomoMessagePassingStack
 from flunet.utils.common import NodeType
+from flunet.utils.types import ConfigDict, InputBatch
 
 
 class GNNBase(AbstractGNNBase):
-    """
-    Graph Neural Network (GNN) Base module processes the graph observations of the environment.
-    It uses a stack of multiple GNN Blocks. Each block defines a single GNN pass.
-    The forward functions is defined by implementations of this abstract class.
-    This implementation is used for homogeneous observation graphs.
+    """Graph Neural Network (GNN) Base module processes the graph observations of the environment.
+
+    It uses a stack of multiple GNN Blocks. Each block defines a single GNN pass. The forward functions is defined by
+    implementations of this abstract class. This implementation is used for homogeneous observation graphs.
     """
 
     def __init__(
@@ -33,7 +33,7 @@ class GNNBase(AbstractGNNBase):
               latent_dimension: how large the latent-dimension of the embedding should be
               base: more config used for the message passing stack
         """
-        super(GNNBase, self).__init__(network_config)
+        super().__init__(network_config)
 
         latent_dimension = network_config.get("latent_dimension")
         base_config = network_config.get("base_config")
@@ -91,8 +91,8 @@ class GNNBase(AbstractGNNBase):
         global_features: Optional[torch.Tensor] = None,
         batch: Optional[torch.Tensor] = None,
     ) -> Tuple[Dict, Dict, Optional[torch.Tensor], Optional[Dict]]:
-        """
-        Performs a forward pass through the Full Graph Neural Network for the given input batch of homogeneous graphs
+        """Performs a forward pass through the Full Graph Neural Network for the given input batch of homogeneous
+        graphs.
 
         Args:
             tensor: Batch of Data objects of pytorch geometric. Represents a number of homogeneous graphs

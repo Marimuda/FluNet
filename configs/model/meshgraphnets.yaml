@@ -14,11 +14,11 @@ scheduler:
 net:
   _target_: flunet.nn.models.GNNModels.HomoGNN
   in_node_features:
-    '0': 2       # 2D velocity, using Dict[str, int] to prepare for hetrogeneousGraphs
+    "0": 2 # 2D velocity, using Dict[str, int] to prepare for hetrogeneousGraphs
   in_edge_features:
-    '0': 3     # 2D coord +  length, 7 for 2D coord mesh pos + 3D coord world ps + 2 * length
-  in_global_features: 0   # 0 for disabled, 3 for 3D world
-  out_node_features: 2    # 2D velocity
+    "0": 3 # 2D coord +  length, 7 for 2D coord mesh pos + 3D coord world ps + 2 * length
+  in_global_features: 0 # 0 for disabled, 3 for 3D world
+  out_node_features: 2 # 2D velocity
   network_config:
     latent_dimension: 128
     mlp_decoder: true
@@ -28,24 +28,23 @@ net:
       num_blocks: 2
       use_residual_connections: true
       mlp:
-        activation_function: 'ReLU'
+        activation_function: "ReLU"
         spectral_norm: false
         output_layer: true
         max_neurons: 128
         num_layers: 2
-        network_shape: 'block'
+        network_shape: "block"
         regularization:
           dropout: 0.0
-          latent_normalization: 'LayerNorm'
+          latent_normalization: "LayerNorm"
 
-  
   # Network
 #  hidden_dim: 128
 #  num_layers: 2
 #  message_passing_steps: 15
 
 config:
-  field: 'velocity'
+  field: "velocity"
   noise_scale: 0.2
   noise_gamma: 1.0
   accumulate_step_size: 1

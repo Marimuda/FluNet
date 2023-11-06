@@ -1,5 +1,6 @@
-from flunet.nn.models.GNNModels import HomoGNN
 from typing import Dict
+
+from flunet.nn.models.gnn_models import HomoGNN
 from flunet.utils.types import ConfigDict
 
 

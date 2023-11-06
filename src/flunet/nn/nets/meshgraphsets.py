@@ -1,17 +1,18 @@
 import math
+from typing import Any
+
 import torch
 import torch.nn as nn
-import torch.optim as optim
 import torch.nn.functional as F
+import torch.optim as optim
+from einops import rearrange, repeat  # reduce
 from lightning import LightningModule
-from einops import rearrange, reduce, repeat
-
 from torchmetrics import MeanMetric
 
 from flunet.nn.loss import L2Loss
 from flunet.utils.common import NodeType
-from flunet.utils.Normalization import Normalizer
-from flunet.utils.types import *
+from flunet.utils.normalization import Normalizer
+from flunet.utils.types import ConfigDict
 
 # Notes: I don't need get_network_config, it is taken from hydra specifications.
 #   add_noise_to_mesh_nodes is handled in _extract_features -> _add_noise, which is called within training_step
@@ -19,8 +20,8 @@ from flunet.utils.types import *
 
 # Notes: Color is only used for cloud points. TODO: REMOVE COLOR FROM MESH GRAPH NETS
 # Notes: poisson (only 2D): Tensor containing poisson ratio of the current data sample. TODO: REMOVE POISSON.
-# Notes: add_static_tissue_info_batched: Is datset specific, not of interest.
-# Notes: According to convert_to_mgn_hetro: It looks like hetrogeneous = Hypergraph with two edge types and one node type. According to MeshGraphNets. TODO: Implement relevant Hetro functionality
+# Notes: add_static_tissue_info_batched: Is dataset specific, not of interest.
+# Notes: According to convert_to_mgn_hetro: It looks like heterogeneous = Hypergraph with two edge types and one node type. According to MeshGraphNets. TODO: Implement relevant Hetro functionality
 
 # Notes: I think it looks too clumsy to control internally whether everything is homo or hetro.
 #   I think composition Base -> Homo / Hetro overwriting differences is the best approach
@@ -36,16 +37,16 @@ class MeshGraphNetsLitModule(LightningModule):
     def __init__(
         self, net: nn.Module, optimizer: optim.Optimizer, scheduler: optim.lr_scheduler._LRScheduler, config: ConfigDict
     ):
-        super(MeshGraphNetsLitModule, self).__init__()
+        super().__init__()
 
-        self.save_hyperparameters(logger=False, ignore=['net'])
+        self.save_hyperparameters(logger=False, ignore=["net"])
 
-        #self.automatic_optimization = False
+        # self.automatic_optimization = False
         self.field = config.get("field")
         self.target_field = "target_" + self.field
 
         self.net = net
-        
+
         # loss function
         self.criterion = L2Loss()
 
@@ -57,10 +58,9 @@ class MeshGraphNetsLitModule(LightningModule):
         self.edge_normalizer = Normalizer(size=self.net.edge_feat_dim, name="edge_normalizer")
         self.output_normalizer = Normalizer(size=self.net.out_node_feat_dim, name="output_normalizer")
 
-
     def forward(self, x: torch.Tensor):
         return self.net(x)
-    
+
     def on_train_start(self):
         # by default lightning executes validation step sanity checks before training starts,
         # so it's worth to make sure validation metrics don't store results from these checks
@@ -104,19 +104,19 @@ class MeshGraphNetsLitModule(LightningModule):
         graph[self.field] += noise
         graph[self.target_field] += (1.0 - self.hparams.config.noise_gamma) * noise
 
-#    def l2_loss(self, prediction, graph, start, end, is_training=True):
-#        # build target velocity change
-#        cur_field = graph[self.field][:, start:end]
-#        target_field = graph[self.target_field][:, start:end]
-#        field_change = target_field - cur_field
-#        target_normalized = self.output_normalizer(field_change, accumulate=is_training)
+    #    def l2_loss(self, prediction, graph, start, end, is_training=True):
+    #        # build target velocity change
+    #        cur_field = graph[self.field][:, start:end]
+    #        target_field = graph[self.target_field][:, start:end]
+    #        field_change = target_field - cur_field
+    #        target_normalized = self.output_normalizer(field_change, accumulate=is_training)
 
-#        # build loss
-#        node_type = rearrange(graph.node_type, "n 1 -> n")
-#        loss_mask = torch.logical_or(torch.eq(node_type, NodeType.NORMAL), torch.eq(node_type, NodeType.OUTFLOW))
-#        error = reduce((target_normalized - prediction) ** 2, "n l f -> n l", "sum")
-#        loss = torch.mean(error[loss_mask])
-#        return loss
+    #        # build loss
+    #        node_type = rearrange(graph.node_type, "n 1 -> n")
+    #        loss_mask = torch.logical_or(torch.eq(node_type, NodeType.NORMAL), torch.eq(node_type, NodeType.OUTFLOW))
+    #        error = reduce((target_normalized - prediction) ** 2, "n l f -> n l", "sum")
+    #        loss = torch.mean(error[loss_mask])
+    #        return loss
 
     def _build_target_velocity_change(self, graph, start, end, is_training=True):
         # build target velocity change
@@ -137,7 +137,7 @@ class MeshGraphNetsLitModule(LightningModule):
         num_steps = int(math.ceil(traj_length / small_step))
 
         accumulate_loss = 0.0
-        #optimizer = self.optimizers()
+        # optimizer = self.optimizers()
 
         for i in range(0, num_steps):  # solve the issue of out of memory
             edge_index = batch.edge_index
@@ -150,44 +150,41 @@ class MeshGraphNetsLitModule(LightningModule):
 
             if self.current_epoch == 0 and is_training:  # First epoch to accumulate data for normalization terms
                 continue
-            #loss.backward()  # NOTE: Is this working or do I need to manually call self.manual_backward(loss)
+            # loss.backward()  # NOTE: Is this working or do I need to manually call self.manual_backward(loss)
             accumulate_loss += loss.item()
 
-        
         return loss, accumulate_loss, traj_length
-        
 
     def training_step(self, batch, batch_idx):
         loss, accumulate_loss, traj_length = self.model_step(batch, batch_idx)
 
-        if self.current_epoch == 0:# First epoch to accumulate data for normalization terms
+        if self.current_epoch == 0:  # First epoch to accumulate data for normalization terms
             return
 
-        self.train_loss(loss) # accumulate multibatch if needed
+        self.train_loss(loss)  # accumulate multibatch if needed
         self.log("train/loss", accumulate_loss / traj_length, on_step=True, on_epoch=True, logger=True)
 
         return loss
 
     def validation_step(self, batch, batch_idx):
-#        in_node_features, in_edge_features = self._extract_features(batch, is_training=False, add_noise=False)
-#        traj_length = batch[self.field].shape[
-#            1
-#        ]  # TODO: Check what alternative there is to self.field, what does MMGN use?
-#        small_step = self.hparams.config.accumulate_step_size
-#        num_steps = int(math.ceil(traj_length / small_step))
-#        accumulate_loss = 0.0
-#        for i in range(0, num_steps):
-#            edge_index = batch.edge_index
-#            start = i * small_step
-#            end = (i + 1) * small_step
-#
-#            prediction, _, _ = self.net(edge_index, in_node_features[:, start:end], in_edge_features[:, start:end])
-#            loss = self.criterion(prediction, batch, start, end, is_training=False)
-#            accumulate_loss += loss.item()
+        #        in_node_features, in_edge_features = self._extract_features(batch, is_training=False, add_noise=False)
+        #        traj_length = batch[self.field].shape[
+        #            1
+        #        ]  # TODO: Check what alternative there is to self.field, what does MMGN use?
+        #        small_step = self.hparams.config.accumulate_step_size
+        #        num_steps = int(math.ceil(traj_length / small_step))
+        #        accumulate_loss = 0.0
+        #        for i in range(0, num_steps):
+        #            edge_index = batch.edge_index
+        #            start = i * small_step
+        #            end = (i + 1) * small_step
+        #
+        #            prediction, _, _ = self.net(edge_index, in_node_features[:, start:end], in_edge_features[:, start:end])
+        #            loss = self.criterion(prediction, batch, start, end, is_training=False)
+        #            accumulate_loss += loss.item()
         loss, accumulate_loss, traj_length = self.model_step(batch, batch_idx, is_training=False)
         self.val_loss(loss)
         self.log("val/loss", accumulate_loss / traj_length, on_step=True, on_epoch=True, logger=True)
-
 
     def predict_step(self, batch, batch_idx, dataloader_idx=None):
         """Integrate model outputs."""

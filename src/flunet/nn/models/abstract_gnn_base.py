@@ -1,10 +1,11 @@
+from typing import Union
+
 import torch
 import torch.nn as nn
+from torch_geometric.data import Data, HeteroData
 
-from flunet.nn.conv.AbstractMessagePassingStack import AbstractMessagePassingStack
-from flunet.utils.types import *
-
-Tensor = torch.Tensor
+from flunet.nn.conv.abstract_message_passing_stack import AbstractMessagePassingStack
+from flunet.utils.types import ConfigDict
 
 
 def get_global_features(graph_tensor: Union[Data, HeteroData]) -> torch.Tensor:
@@ -38,10 +39,10 @@ def get_global_features(graph_tensor: Union[Data, HeteroData]) -> torch.Tensor:
 
 
 class AbstractGNNBase(nn.Module):
-    """
-    Graph Neural Network (GNN) Base module processes the graph observations of the environment.
-    It uses a stack of multiple GNN Blocks. Each block defines a single GNN pass.
-    The forward functions is defined by implementations of this abstract class.
+    """Graph Neural Network (GNN) Base module processes the graph observations of the environment.
+
+    It uses a stack of multiple GNN Blocks. Each block defines a single GNN pass. The forward functions is defined by
+    implementations of this abstract class.
     """
 
     def __init__(self, network_config: ConfigDict):
@@ -63,32 +64,31 @@ class AbstractGNNBase(nn.Module):
 
     @property
     def out_node_features(self) -> int:
-        """
-        Query how many node features the GNN Base will return.
+        """Query how many node features the GNN Base will return.
+
         Returns:
             number of node features.
         """
         if self._message_passing_stack.num_blocks > 0:  # has message passing block
             return self._message_passing_stack.out_node_features
-        else:  # is just linear embedding
-            return self._node_input_embeddings[-1].out_features
+        # is just linear embedding
+        return self._node_input_embeddings[-1].out_features
 
     @property
     def out_edge_features(self) -> int:
-        """
-        Query how many edge features the GNN Base will return.
+        """Query how many edge features the GNN Base will return.
+
         Returns:
             number of edge features.
         """
         if self._message_passing_stack.num_blocks > 0:
             return self._message_passing_stack.out_edge_features
-        else:
-            return self._edge_input_embeddings[-1].out_features
+        return self._edge_input_embeddings[-1].out_features
 
     @property
     def out_global_features(self) -> int:
-        """
-        Query how many edge features the GNN Base will return.
+        """Query how many edge features the GNN Base will return.
+
         Returns:
             number of edge features.
         """

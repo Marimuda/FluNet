@@ -1,47 +1,40 @@
-"""
-This module defines the `MeshDataModule` class, which is a PyTorch Lightning data module
-for loading and processing mesh data. The `MeshDataModule` class provides a standardized
-interface for loading and processing mesh data, and can be easily integrated into any
-PyTorch Lightning project that requires mesh data.
+"""This module defines the `MeshDataModule` class, which is a PyTorch Lightning data module for loading and processing
+mesh data. The `MeshDataModule` class provides a standardized interface for loading and processing mesh data, and can be
+easily integrated into any PyTorch Lightning project that requires mesh data.
 
-The `MeshDataModule` class inherits from the `pl.LightningDataModule` class,
-and provides several methods for preparing and loading data, including `prepare_data()`,
-`setup()`, `train_dataloader()`, and `val_dataloader()`. The `MeshDataModule` class also provides
-a `transfer_batch_to_device()` method for transferring batches of data to the GPU for training.
+The `MeshDataModule` class inherits from the `pl.LightningDataModule` class, and provides several methods for preparing
+and loading data, including `prepare_data()`, `setup()`, `train_dataloader()`, and `val_dataloader()`. The
+`MeshDataModule` class also provides a `transfer_batch_to_device()` method for transferring batches of data to the GPU
+for training.
 
-Overall, the `MeshDataModule` class provides a convenient and standardized way to load and
-process mesh data for use in PyTorch Lightning models.
+Overall, the `MeshDataModule` class provides a convenient and standardized way to load and process mesh data for use in
+PyTorch Lightning models.
 """
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
+
+from lightning import LightningDataModule
 from torch_geometric.data import Dataset
 from torch_geometric.loader import DataLoader
-from lightning import LightningDataModule
 
 from flunet.data.dataset.meshdataset import MeshDataset
 
 
 class MeshDataModule(LightningDataModule):
-    """
-    This class defines the data module for the Mesh dataset.
-    """
+    """This class defines the data module for the Mesh dataset."""
 
     def __init__(self, transform=None, **kwargs):
-        super(MeshDataModule, self).__init__()
+        super().__init__()
         self.data_train: Optional[Dataset] = None
         self.data_val: Optional[Dataset] = None
         # self.data_test: Optional[Dataset] = None
         self.save_hyperparameters(logger=False)
 
     def prepare_data(self):
-        """
-        This method is used to download and prepare the data.
-        """
+        """This method is used to download and prepare the data."""
         print("Preparing data...")
 
     def setup(self, stage: Optional[str] = None):
-        """
-        This method is used to split the data into train and validation sets.
-        """
+        """This method is used to split the data into train and validation sets."""
         print("Setting up dataset...")
         if stage == "fit" or stage is None:
             self.data_train = MeshDataset(self.hparams, split="train")
@@ -50,16 +43,12 @@ class MeshDataModule(LightningDataModule):
             print("Number of validation data: ", len(self.data_val))
 
     def transfer_batch_to_device(self, batch, device, dataloader_idx: int):
-        """
-        This method is used to transfer the batch to the specified device.
-        """
+        """This method is used to transfer the batch to the specified device."""
         batch = batch.to(device)
         return batch
 
     def train_dataloader(self):
-        """
-        This method returns the training dataloader.
-        """
+        """This method returns the training dataloader."""
         return DataLoader(
             dataset=self.data_train,
             batch_size=self.hparams.batch_size,
@@ -69,9 +58,7 @@ class MeshDataModule(LightningDataModule):
         )
 
     def val_dataloader(self):
-        """
-        This method returns the validation dataloader.
-        """
+        """This method returns the validation dataloader."""
         return DataLoader(
             dataset=self.data_val,
             batch_size=self.hparams.batch_size,

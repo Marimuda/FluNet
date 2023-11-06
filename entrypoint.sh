@@ -11,5 +11,8 @@ else
     echo "Directory is not mounted or is empty. Skipping package installation."
 fi
 
+echo "Setup git config safe directory"
+git config --global --add safe.directory /workspace
+
 # Execute the command passed to the docker run
 exec "$@"

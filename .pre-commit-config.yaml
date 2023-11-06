@@ -143,3 +143,9 @@ repos:
             "--color",
             "--",
           ]
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.4.0
+    hooks:
+      - id: check-added-large-files
+        args: [--maxkb=5000]

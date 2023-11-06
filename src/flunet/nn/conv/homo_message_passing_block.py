@@ -1,20 +1,25 @@
+from typing import Optional, Tuple
+
 import torch
 from torch_geometric.nn import MetaLayer
 
-from flunet.utils.types import *
-from flunet.nn.conv.AbstractMessagePassingBlock import AbstractMessagePassingBlock
-from flunet.nn.aggr.HomoMetaModules import EdgeModule, NodeModule, GlobalModule, GlobalModuleNoUpdate
-
-Tensor = torch.Tensor
+from flunet.nn.aggr.homo_meta_modules import (
+    EdgeModule,
+    GlobalModule,
+    GlobalModuleNoUpdate,
+    NodeModule,
+)
+from flunet.nn.conv.abstract_message_passing_block import AbstractMessagePassingBlock
+from flunet.utils.types import ConfigDict
 
 
 class HomoMessagePassingBlock(AbstractMessagePassingBlock):
-    """
-    Defines a single MessagePassingLayer that takes a homogeneous observation graph and updates its node and edge
+    """Defines a single MessagePassingLayer that takes a homogeneous observation graph and updates its node and edge
     features using different modules (Edge, Node, Global).
-    It first updates the edge-features. The node-features are updated next using the new edge-features. Finally,
-    it updates the global features using the new edge- & node-features. The updates are done through MLPs.
-    The three Modules (Edge, Node, Global) are combined into a MetaLayer.
+
+    It first updates the edge-features. The node-features are updated next using the new edge-features. Finally, it
+    updates the global features using the new edge- & node-features. The updates are done through MLPs. The three
+    Modules (Edge, Node, Global) are combined into a MetaLayer.
     """
 
     def __init__(
@@ -94,21 +99,24 @@ class HomoMessagePassingBlock(AbstractMessagePassingBlock):
         self._meta_layer = MetaLayer(edge_module, node_module, global_module)
 
     def forward(
-        self, node_features: Tensor, edge_index: Tensor, edge_features: Tensor, global_features: Tensor, batch: Tensor
-    ) -> Tuple[Tensor, Tensor, Tensor]:
-        """
-        Computes the forward pass for this message passing block
+        self,
+        node_features: torch.Tensor,
+        edge_index: torch.Tensor,
+        edge_features: torch.Tensor,
+        global_features: torch.Tensor,
+        batch: torch.Tensor,
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        """Computes the forward pass for this message passing block.
 
         Args:
             node_features: The features for each node of the graph. Has shape (num_nodes, num_features_per_node)
-            edge_index: Connectivity Tensor of the graph. Has shape (2, num_edges)
+            edge_index: Connectivity torch.Tensor of the graph. Has shape (2, num_edges)
             edge_features: Feature matrix of the edges. Has shape (num_edges, num_features_per_edge)
             global_features: Features for the whole graph. Has shape (num_global_features, num_graphs_in_batch)
             batch: Indexing for different graphs in the same badge.
 
         Returns:
             Updated node, edge and global features as a tuple
-
         """
         updated_node_features, updated_edge_features, updated_global_features = self._meta_layer(
             node_features, edge_index, edge_features, global_features, batch

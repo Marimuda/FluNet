@@ -1,12 +1,16 @@
-from torch import nn as nn
-import torch
-from torch.nn import utils
-import numpy as np
-from flunet.utils.types import *
-from flunet.nn.Helper import View
-from flunet.nn.Utility import get_activation_and_regularization_layers, get_layer_size_layout
+from typing import Optional, Tuple, Union
 
-Tensor = torch.Tensor
+import numpy as np
+import torch
+from torch import nn as nn
+from torch.nn import utils
+
+from flunet.nn.helper import View
+from flunet.nn.utility import (
+    get_activation_and_regularization_layers,
+    get_layer_size_layout,
+)
+from flunet.utils.types import ConfigDict, Shape
 
 # define a dictionary that maps activation function names to functions
 activation_functions = {
@@ -25,8 +29,9 @@ def build_mlp(
     latent_dimension: Optional[int] = None,
     out_features: Optional[int] = None,
 ) -> Tuple[nn.ModuleList, int]:
-    """
-    Builds the discriminator (sub)network. This part of the network accepts some latent space as the input and
+    """Builds the discriminator (sub)network.
+
+    This part of the network accepts some latent space as the input and
     outputs a classification
     Args:
         in_features: Number of input features
@@ -37,7 +42,6 @@ def build_mlp(
         Overwrites "max_neurons" and "network_shape if provided.
         out_features: Output dimension of the feedforward network
     Returns: A nn.ModuleList representing the discriminator module, and the size of the final activation of this module
-
     """
 
     forward_layers = nn.ModuleList()
@@ -50,7 +54,7 @@ def build_mlp(
             in_features: int = int(np.prod(in_features))
             forward_layers.append(View(default_shape=(in_features,), custom_repr="Flattening feedforward input to 1d"))
     else:
-        raise ValueError("Unknown type for in_features: {} parameter in mlp.py".format(type(in_features)))
+        raise ValueError(f"Unknown type for in_features: {type(in_features)} parameter in mlp.py")
 
     activation_function: str = feedforward_config.get("activation_function").lower()
     regularization_config = feedforward_config.get("regularization", {})
@@ -80,7 +84,7 @@ def build_mlp(
         # add activation function
         activation_fn = activation_functions.get(activation_function, None)
         if activation_fn is None:
-            raise ValueError("Unknown activation function '{}'".format(activation_function))
+            raise ValueError(f"Unknown activation function '{activation_function}'")
         forward_layers.append(activation_fn)
 
         additional_layers = get_activation_and_regularization_layers(
@@ -138,13 +142,13 @@ class MLP(nn.Module):
         """
         return self._out_features
 
-    def forward(self, x: Tensor) -> Tensor:
-        """
-        Forward pass of the feedforward network.
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Forward pass of the feedforward network.
+
         Args:
-            x: Input tensor
+            x: Input torch.Tensor
         Returns:
-            Output tensor after passing through the feedforward network f(x)
+            Output torch.Tensor after passing through the feedforward network f(x)
         """
         for layer in self.feedforward_layers:
             x = layer(x)
