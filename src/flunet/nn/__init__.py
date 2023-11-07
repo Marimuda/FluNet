@@ -1,6 +1,7 @@
 from .aggr import *  # noqa
 from .conv import *  # noqa
 from .dense import *  # noqa
+from .ema import LitEma
 from .functional import *  # noqa
 from .models import *  # noqa
 from .norm import *  # noqa
