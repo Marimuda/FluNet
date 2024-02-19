@@ -1,4 +1,4 @@
-pre-commit==3.5
+pre-commit==3.6.2
 pytest==7.*
 hydra-optuna-sweeper
 hydra-colorlog
